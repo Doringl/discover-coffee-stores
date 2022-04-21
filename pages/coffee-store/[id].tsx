@@ -1,8 +1,8 @@
+import type { NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
 
-const CoffeeStore: React.FC = () => {
+const CoffeeStore: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
 

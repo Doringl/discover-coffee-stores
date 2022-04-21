@@ -1,8 +1,6 @@
 /** By default, this is a mobile breakpoint **/
 .container {
   margin-bottom: 1rem;
-  position: relative;
-  z-index: 2;
 }
 
 .title {
@@ -38,14 +36,17 @@
 
   padding-top: 1rem /* 16px */;
   padding-bottom: 1rem /* 16px */;
-  font-size: 1.125rem /* 18px */;
+  font-size: 1.25rem /* 20px */;
   line-height: 1.75rem /* 28px */;
   padding-left: 2.5rem /* 40px */;
   padding-right: 2.5rem /* 40px */;
+
+  transition: 0.7s;
 }
 
 .button:hover {
-  background-color: rgb(224, 222, 222);
+  background-color: black;
+  color: white;
 }
 
 /** 
@@ -90,7 +91,7 @@
   .button {
     padding-top: 1rem /* 16px */;
     padding-bottom: 1rem /* 16px */;
-    font-size: 1.125rem /* 18px */;
+    font-size: 1.25rem /* 20px */;
     line-height: 1.75rem /* 28px */;
     padding-left: 2.5rem /* 40px */;
     padding-right: 2.5rem /* 40px */;
@@ -100,9 +101,7 @@
 /** lg breakpoint **/
 @media (min-width: 1024px) {
   .container {
-    margin-bottom: 1rem;
-    position: relative;
-    z-index: 2;
+    text-align: left;
   }
 
   .title {
