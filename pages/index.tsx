@@ -6,17 +6,11 @@ import Card from "../components/Card/Card";
 
 import styles from "../styles/Home.module.css";
 
-import coffeeStores from "../data/coffee-stores.json";
+import { getCoffeeStores } from "../lib/coffee-stores";
+import { CoffeeStores } from "../types";
 
 interface IPageProps {
-  coffeeStores: Array<{
-    id: number;
-    name: string;
-    imgUrl: string;
-    websiteUrl: string;
-    address: string;
-    neighborhood: string;
-  }>;
+  coffeeStores: CoffeeStores;
 }
 
 const Home: NextPage<IPageProps> = ({ coffeeStores }) => {
@@ -58,9 +52,11 @@ export default Home;
 //- The data can be publicly cached (not user-specific).
 //- The page must be pre-rendered (for SEO) and be very fast — getStaticProps generates HTML and JSON files, both of which can be cached by a CDN for performance.
 export const getStaticProps: GetStaticProps = async () => {
+  const coffeeStores = await getCoffeeStores();
+
   return {
     props: {
       coffeeStores,
-    },
+    }, // will be passed to the page component as props
   };
 };

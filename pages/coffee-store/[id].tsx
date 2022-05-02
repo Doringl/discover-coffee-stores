@@ -4,19 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
-import coffeeStores from "../../data/coffee-stores.json";
-
 import styles from "../../styles/coffee-store.module.css";
+import { getCoffeeStores } from "../../lib/coffee-stores";
+import { CoffeeStore } from "../../types";
 
 interface IPageProps {
-  coffeeStore: {
-    id: number;
-    name: string;
-    imgUrl: string;
-    websiteUrl: string;
-    address: string;
-    neighborhood: string;
-  };
+  coffeeStore: CoffeeStore;
 }
 
 const CoffeeStore: NextPage<IPageProps> = ({ coffeeStore }) => {
@@ -26,7 +19,7 @@ const CoffeeStore: NextPage<IPageProps> = ({ coffeeStore }) => {
     return <div>Loading ...</div>;
   }
 
-  const { name, imgUrl, websiteUrl, address, neighborhood } = coffeeStore;
+  const { id, name, imgUrl, address, neighborhood } = coffeeStore;
 
   const handleUpVoteButton = () => {
     console.log("test");
@@ -110,18 +103,22 @@ export default CoffeeStore;
 //- The data comes from a headless CMS.
 //- The data can be publicly cached (not user-specific).
 //- The page must be pre-rendered (for SEO) and be very fast — getStaticProps generates HTML and JSON files, both of which can be cached by a CDN for performance.
-export const getStaticProps: GetStaticProps = async (ctx) => {
+export const getStaticProps: GetStaticProps = async (context) => {
+  const coffeeStores = await getCoffeeStores();
+  const findCoffeeStoreById = coffeeStores.find((coffeeStore) => {
+    return coffeeStore.id.toString() === context.params?.id;
+  });
+
   return {
     props: {
-      coffeeStore: coffeeStores.find((coffeeStore) => {
-        return coffeeStore.id.toString() === ctx.params?.id;
-      }),
-    },
+      coffeeStore: findCoffeeStoreById ? findCoffeeStoreById : {},
+    }, // will be passed to the page component as props
   };
 };
 
 // You should use getStaticPaths if you’re statically pre-rendering pages that use dynamic routes
 export const getStaticPaths: GetStaticPaths = async () => {
+  const coffeeStores = await getCoffeeStores();
   const paths = coffeeStores.map((coffeeStore) => {
     return { params: { id: coffeeStore.id.toString() } };
   });
