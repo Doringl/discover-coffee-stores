@@ -1,3 +1,4 @@
+import { useContext, useEffect, useState } from "react";
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 
@@ -9,11 +10,46 @@ import styles from "../styles/Home.module.css";
 import { getCoffeeStores } from "../lib/coffee-stores";
 import { CoffeeStores } from "../types";
 
+import useTrackLocations from "../hooks/useTrackLocations";
+import { StoreContext } from "../store/storeProvider";
+import { Types } from "../store/reducers";
+
 interface IPageProps {
   coffeeStores: CoffeeStores;
 }
 
 const Home: NextPage<IPageProps> = ({ coffeeStores }) => {
+  const { handleTrackLocation, locationErrorMsg, isFindingLocation } =
+    useTrackLocations();
+  /* const [nearCoffeeStores, setNearCoffeeStores] = useState<CoffeeStores>([]); */
+  const [nearCoffeeStoresError, setNearCoffeeStoresError] =
+    useState<string>("");
+
+  const { dispatch, state } = useContext(StoreContext);
+  const { nearCoffeeStores, latLong } = state;
+
+  useEffect(() => {
+    const setCoffeeStoresByLocation = async () => {
+      if (latLong) {
+        try {
+          const response = await getCoffeeStores(latLong, 30);
+
+          dispatch({ type: Types.SET_COFFEE_STORES, payload: response });
+          /* setNearCoffeeStores(response); */
+          setNearCoffeeStoresError("");
+        } catch (error) {
+          setNearCoffeeStoresError((error as Error).message);
+        }
+      }
+    };
+
+    setCoffeeStoresByLocation();
+  }, [latLong, dispatch]);
+
+  const handleOnBannerBtnClick = () => {
+    handleTrackLocation();
+  };
+
   return (
     <div className={styles.container}>
       <Head>
@@ -23,7 +59,31 @@ const Home: NextPage<IPageProps> = ({ coffeeStores }) => {
       </Head>
 
       <main className={styles.main}>
-        <Banner />
+        <Banner
+          buttonText={isFindingLocation ? "Locating..." : "View stores nearby"}
+          handleOnClick={handleOnBannerBtnClick}
+        />
+        {locationErrorMsg && <p>Something went wrong: {locationErrorMsg}</p>}
+        {nearCoffeeStoresError && (
+          <p>Something went wrong: {nearCoffeeStoresError}</p>
+        )}
+
+        {nearCoffeeStores && nearCoffeeStores.length > 0 && (
+          <>
+            <h2 className={styles.headingTwo}>Stores Near You</h2>
+            <div className={styles.cardLayout}>
+              {nearCoffeeStores.map((coffeeStore) => (
+                <Card
+                  key={coffeeStore.id}
+                  href={`/coffee-store/${coffeeStore.id}`}
+                  name={coffeeStore.name}
+                  imgUrl={coffeeStore.imgUrl}
+                />
+              ))}
+            </div>
+          </>
+        )}
+
         {coffeeStores.length > 0 && (
           <>
             <h2 className={styles.headingTwo}>Toronto stores</h2>

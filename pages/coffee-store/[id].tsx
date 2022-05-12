@@ -3,10 +3,14 @@ import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useContext, useEffect, useState } from "react";
 
 import styles from "../../styles/coffee-store.module.css";
 import { getCoffeeStores } from "../../lib/coffee-stores";
 import { CoffeeStore } from "../../types";
+import { isEmpty } from "../../utils/isEmpty";
+
+import { StoreContext } from "../../store/storeProvider";
 
 interface IPageProps {
   coffeeStore: CoffeeStore;
@@ -14,12 +18,33 @@ interface IPageProps {
 
 const CoffeeStore: NextPage<IPageProps> = ({ coffeeStore }) => {
   const router = useRouter();
+  const id = router.query.id;
+
+  const {
+    state: { nearCoffeeStores },
+  } = useContext(StoreContext);
+
+  const [nearCoffeeStore, setNearCoffeeStore] = useState(coffeeStore);
+
+  useEffect(() => {
+    if (isEmpty(coffeeStore)) {
+      if (nearCoffeeStores.length > 0) {
+        const coffeeStoreFromContext = nearCoffeeStores.find((coffeeStore) => {
+          return coffeeStore.id.toString() === id; //dynamic id
+        });
+
+        if (coffeeStoreFromContext) {
+          setNearCoffeeStore(coffeeStoreFromContext);
+        }
+      }
+    }
+  }, [id, coffeeStore, nearCoffeeStores]);
 
   if (router.isFallback) {
     return <div>Loading ...</div>;
   }
 
-  const { id, name, imgUrl, address, neighborhood } = coffeeStore;
+  const { name, imgUrl, address, neighborhood } = nearCoffeeStore;
 
   const handleUpVoteButton = () => {
     console.log("test");
@@ -29,10 +54,10 @@ const CoffeeStore: NextPage<IPageProps> = ({ coffeeStore }) => {
     <div className={styles.layout}>
       <Head>
         <title>{name}</title>
-        <meta
+        {/* <meta
           name='description'
           content={`${!name.includes("Coffee") ? "coffee" : ""} shop`}
-        ></meta>
+        ></meta> */}
       </Head>
       <div className={styles.container}>
         <div className={styles.colOne}>

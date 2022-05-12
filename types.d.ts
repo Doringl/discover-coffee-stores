@@ -20,3 +20,8 @@ export type CoffeeStore = {
   address: string;
   neighborhood: Array<string>;
 };
+
+export interface IStoreState {
+  latLong: string;
+  nearCoffeeStores: CoffeeStores;
+}

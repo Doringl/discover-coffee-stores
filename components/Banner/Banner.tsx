@@ -1,13 +1,20 @@
 import React from "react";
 import styles from "./Banner.module.css";
 
-const Banner: React.FC = () => {
+interface IBanner {
+  buttonText: string;
+  handleOnClick: () => void;
+}
+
+const Banner: React.FC<IBanner> = ({ buttonText, handleOnClick }) => {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Discover Coffee Stores</h1>
       <p className={styles.subTitle}>Discover your local coffee shops!</p>
       <div className={styles.buttonWrapper}>
-        <button className={styles.button}>View stores nearby</button>
+        <button className={styles.button} onClick={handleOnClick}>
+          {buttonText}
+        </button>
       </div>
     </div>
   );
