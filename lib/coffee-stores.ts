@@ -18,7 +18,7 @@ const requestHeaders = () => {
 const getUrlForCoffeeStores = (
   latLon: string,
   query: string,
-  limit: number
+  limit: string
 ) => {
   return `https://api.foursquare.com/v3/places/nearby?ll=${latLon}&query=${query}&limit=${limit}`;
 };
@@ -35,7 +35,7 @@ const getListOfCoffeeStorePhotos = async () => {
 
 export const getCoffeeStores = async (
   latLong = "43.65267326999575,-79.39545615725015",
-  limit = 8
+  limit = "8"
 ): Promise<CoffeeStores> => {
   const photos = await getListOfCoffeeStorePhotos();
   const response = await fetch(
@@ -46,6 +46,7 @@ export const getCoffeeStores = async (
   );
 
   const coffeeStoresData = await response.json();
+  console.log(coffeeStoresData);
 
   return (
     coffeeStoresData.results?.map((venue: IVenue, idx: number) => {

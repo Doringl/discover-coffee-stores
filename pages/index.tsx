@@ -32,9 +32,12 @@ const Home: NextPage<IPageProps> = ({ coffeeStores }) => {
     const setCoffeeStoresByLocation = async () => {
       if (latLong) {
         try {
-          const response = await getCoffeeStores(latLong, 30);
+          const response = await fetch(
+            `/api/getCoffeeStoresByLocation?latLong=${latLong}&limit=30`
+          );
+          const coffeeStores = await response.json();
 
-          dispatch({ type: Types.SET_COFFEE_STORES, payload: response });
+          dispatch({ type: Types.SET_COFFEE_STORES, payload: coffeeStores });
           /* setNearCoffeeStores(response); */
           setNearCoffeeStoresError("");
         } catch (error) {
